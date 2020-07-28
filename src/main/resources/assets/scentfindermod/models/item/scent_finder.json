@@ -1,0 +1,41 @@
+{
+    "parent": "item/generated",
+    "textures": {
+        "layer0": "scentfindermod:items/scent_finder_16"
+    },
+    "overrides": [
+        { "predicate": { "angle": 0.000000 }, "model": "scentfindermod:item/scent_finder" },
+        { "predicate": { "angle": 0.015625 }, "model": "scentfindermod:item/scent_finder_17" },
+        { "predicate": { "angle": 0.046875 }, "model": "scentfindermod:item/scent_finder_18" },
+        { "predicate": { "angle": 0.078125 }, "model": "scentfindermod:item/scent_finder_19" },
+        { "predicate": { "angle": 0.109375 }, "model": "scentfindermod:item/scent_finder_20" },
+        { "predicate": { "angle": 0.140625 }, "model": "scentfindermod:item/scent_finder_21" },
+        { "predicate": { "angle": 0.171875 }, "model": "scentfindermod:item/scent_finder_22" },
+        { "predicate": { "angle": 0.203125 }, "model": "scentfindermod:item/scent_finder_23" },
+        { "predicate": { "angle": 0.234375 }, "model": "scentfindermod:item/scent_finder_24" },
+        { "predicate": { "angle": 0.265625 }, "model": "scentfindermod:item/scent_finder_25" },
+        { "predicate": { "angle": 0.296875 }, "model": "scentfindermod:item/scent_finder_26" },
+        { "predicate": { "angle": 0.328125 }, "model": "scentfindermod:item/scent_finder_27" },
+        { "predicate": { "angle": 0.359375 }, "model": "scentfindermod:item/scent_finder_28" },
+        { "predicate": { "angle": 0.390625 }, "model": "scentfindermod:item/scent_finder_29" },
+        { "predicate": { "angle": 0.421875 }, "model": "scentfindermod:item/scent_finder_30" },
+        { "predicate": { "angle": 0.453125 }, "model": "scentfindermod:item/scent_finder_31" },
+        { "predicate": { "angle": 0.484375 }, "model": "scentfindermod:item/scent_finder_00" },
+        { "predicate": { "angle": 0.515625 }, "model": "scentfindermod:item/scent_finder_01" },
+        { "predicate": { "angle": 0.546875 }, "model": "scentfindermod:item/scent_finder_02" },
+        { "predicate": { "angle": 0.578125 }, "model": "scentfindermod:item/scent_finder_03" },
+        { "predicate": { "angle": 0.609375 }, "model": "scentfindermod:item/scent_finder_04" },
+        { "predicate": { "angle": 0.640625 }, "model": "scentfindermod:item/scent_finder_05" },
+        { "predicate": { "angle": 0.671875 }, "model": "scentfindermod:item/scent_finder_06" },
+        { "predicate": { "angle": 0.703125 }, "model": "scentfindermod:item/scent_finder_07" },
+        { "predicate": { "angle": 0.734375 }, "model": "scentfindermod:item/scent_finder_08" },
+        { "predicate": { "angle": 0.765625 }, "model": "scentfindermod:item/scent_finder_09" },
+        { "predicate": { "angle": 0.796875 }, "model": "scentfindermod:item/scent_finder_10" },
+        { "predicate": { "angle": 0.828125 }, "model": "scentfindermod:item/scent_finder_11" },
+        { "predicate": { "angle": 0.859375 }, "model": "scentfindermod:item/scent_finder_12" },
+        { "predicate": { "angle": 0.890625 }, "model": "scentfindermod:item/scent_finder_13" },
+        { "predicate": { "angle": 0.921875 }, "model": "scentfindermod:item/scent_finder_14" },
+        { "predicate": { "angle": 0.953125 }, "model": "scentfindermod:item/scent_finder_15" },
+        { "predicate": { "angle": 0.984375 }, "model": "scentfindermod:item/scent_finder" }
+    ]
+}
