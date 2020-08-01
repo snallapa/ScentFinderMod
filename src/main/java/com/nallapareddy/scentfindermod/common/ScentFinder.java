@@ -4,6 +4,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.NBTDynamicOps;
 import net.minecraft.util.ActionResult;
@@ -84,8 +85,22 @@ public class ScentFinder extends Item {
         List<? extends PlayerEntity> players = new ArrayList<>(worldIn.getPlayers());
         if (players.size() > 0) {
             ItemStack heldItem = playerIn.getHeldItem(handIn);
-            CompoundNBT tag = heldItem.getOrCreateTag();
+            CompoundNBT tag;
             PlayerEntity curr = null;
+            boolean flag = !playerIn.abilities.isCreativeMode && heldItem.getCount() == 1;
+            if (flag) {
+                tag = heldItem.getOrCreateTag();
+            } else {
+                ItemStack itemstack = new ItemStack(Items.COMPASS, 1);
+                tag = heldItem.hasTag() ? heldItem.getTag().copy() : new CompoundNBT();
+                itemstack.setTag(tag);
+                if (!playerIn.abilities.isCreativeMode) {
+                    heldItem.shrink(1);
+                }
+                if (!playerIn.inventory.addItemStackToInventory(itemstack)) {
+                    playerIn.dropItem(itemstack, false);
+                }
+            }
             players.sort(Comparator.comparing(o -> o.getName().getString()));
             if (tag.getString("PlayerName").isEmpty()) {
                 curr = players.get(0);
