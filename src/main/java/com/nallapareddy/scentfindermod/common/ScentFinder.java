@@ -91,7 +91,7 @@ public class ScentFinder extends Item {
             if (flag) {
                 tag = heldItem.getOrCreateTag();
             } else {
-                ItemStack itemstack = new ItemStack(Items.COMPASS, 1);
+                ItemStack itemstack = new ItemStack(this, 1);
                 tag = heldItem.hasTag() ? heldItem.getTag().copy() : new CompoundNBT();
                 itemstack.setTag(tag);
                 if (!playerIn.abilities.isCreativeMode) {
