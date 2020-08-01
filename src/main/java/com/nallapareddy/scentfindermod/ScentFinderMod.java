@@ -47,7 +47,7 @@ public class ScentFinderMod
         @SubscribeEvent
         public static void registerItems(final RegistryEvent.Register<Item> itemRegistryEvent) {
             // register a new block here
-            ScentFinder value = new ScentFinder(new Item.Properties().maxStackSize(16).setNoRepair().group(ItemGroup.TOOLS));
+            ScentFinder value = new ScentFinder(new Item.Properties().maxStackSize(1).setNoRepair().group(ItemGroup.TOOLS));
             itemRegistryEvent.getRegistry().register(value);
             DistExecutor.safeRunWhenOn(Dist.CLIENT, new Supplier<DistExecutor.SafeRunnable>() {
                 @Override

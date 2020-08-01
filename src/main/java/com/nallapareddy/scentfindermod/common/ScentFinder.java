@@ -4,7 +4,6 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.nbt.CompoundNBT;
 import net.minecraft.nbt.NBTDynamicOps;
 import net.minecraft.util.ActionResult;
@@ -73,7 +72,7 @@ public class ScentFinder extends Item {
                     if (tPlayerOptional.isPresent()) {
                         PlayerEntity trackedPlayer = tPlayerOptional.get();
                         compoundnbt.put("PlayerPos", writePos((int) trackedPlayer.lastTickPosX, (int) trackedPlayer.lastTickPosY, (int) trackedPlayer.lastTickPosZ));
-                    } 
+                    }
                 }
             }
         }
@@ -127,7 +126,6 @@ public class ScentFinder extends Item {
             cNBT.put("PlayerDimension", p);
         });
         cNBT.putBoolean("PlayerTracked", true);
-        LOGGER.info("TRACKING {}", playerName);
         cNBT.putString("PlayerName", playerName);
     }
 }
