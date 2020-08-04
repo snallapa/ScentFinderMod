@@ -68,7 +68,7 @@ public class ScentFinder extends Item {
                 Optional<RegistryKey<World>> optional = getPlayerDimension(compoundnbt);
                 if (optional.isPresent() && optional.get() == worldIn.func_234923_W_() && compoundnbt.contains("PlayerName")) {
                     String trackedPlayerName = compoundnbt.getString("PlayerName");
-                    Optional<? extends PlayerEntity> tPlayerOptional = worldIn.getPlayers().stream().filter(p -> p.getName().getString().equals(trackedPlayerName)).findFirst();
+                    Optional<? extends PlayerEntity> tPlayerOptional = worldIn.getPlayers().stream().filter(p -> p.getName().getUnformattedComponentText().equals(trackedPlayerName)).findFirst();
                     if (tPlayerOptional.isPresent()) {
                         PlayerEntity trackedPlayer = tPlayerOptional.get();
                         compoundnbt.put("PlayerPos", writePos((int) trackedPlayer.lastTickPosX, (int) trackedPlayer.lastTickPosY, (int) trackedPlayer.lastTickPosZ));
@@ -86,14 +86,14 @@ public class ScentFinder extends Item {
             ItemStack heldItem = playerIn.getHeldItem(handIn);
             CompoundNBT tag = heldItem.getOrCreateTag();
             PlayerEntity curr = null;
-            players.sort(Comparator.comparing(o -> o.getName().getString()));
+            players.sort(Comparator.comparing(o -> o.getName().getUnformattedComponentText()));
             if (tag.getString("PlayerName").isEmpty()) {
                 curr = players.get(0);
             } else {
                 String prevTracked = tag.getString("PlayerName");
                 for (int i = 0; i < players.size(); i++) {
                     PlayerEntity c = players.get(i);
-                    if (c.getName().getString().equals(prevTracked)) {
+                    if (c.getName().getUnformattedComponentText().equals(prevTracked)) {
                         if (i == players.size() - 1) {
                             curr = players.get(0);
                         } else {
@@ -101,11 +101,20 @@ public class ScentFinder extends Item {
                         }
                     }
                 }
+                if (curr == null) {
+                    LOGGER.info("Player {} was not found, resetting compass", prevTracked);
+                    curr = players.get(0);
+                }
             }
-            final String trackedPlayerName = curr.getName().getString();
-            playerIn.sendStatusMessage(new StringTextComponent(String.format("Tracking %s", trackedPlayerName)), true);
-            this.track(worldIn.func_234923_W_(), curr.lastTickPosX, curr.lastTickPosY, curr.lastTickPosZ, curr.getName().getString(), tag);
-            heldItem.setTag(tag);
+            try {
+                final String trackedPlayerName = curr.getName().getUnformattedComponentText();
+                playerIn.sendStatusMessage(new StringTextComponent(String.format("Tracking %s", trackedPlayerName)), true);
+                this.track(worldIn.func_234923_W_(), curr.lastTickPosX, curr.lastTickPosY, curr.lastTickPosZ, curr.getName().getUnformattedComponentText(), tag);
+                heldItem.setTag(tag);
+            } catch (Exception e) {
+                LOGGER.error("Compass could not track was trying to track {}!!!", curr);
+                throw e;
+            }
             return ActionResult.func_233538_a_(heldItem, worldIn.isRemote);
         } else {
             return super.onItemRightClick(worldIn, playerIn, handIn);
