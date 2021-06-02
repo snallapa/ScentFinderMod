@@ -9,15 +9,13 @@ import net.minecraft.nbt.NBTDynamicOps;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.RegistryKey;
+import net.minecraft.util.math.vector.Vector3d;
 import net.minecraft.util.text.StringTextComponent;
 import net.minecraft.world.World;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class ScentFinder extends Item {
     private static final Logger LOGGER = LogManager.getLogger();
@@ -28,7 +26,7 @@ public class ScentFinder extends Item {
     }
 
     @Override
-    public String getTranslationKey(ItemStack stack) {
+    public String getDescriptionId(ItemStack stack) {
         return is_tracking(stack) ? "item.scentfindermod.scent_finder_tracking" : "item.scentfindermod.scent_finder";
     }
 
@@ -37,20 +35,14 @@ public class ScentFinder extends Item {
         return compoundnbt != null && (compoundnbt.contains("PlayerDimension") || compoundnbt.contains("PlayerPos"));
     }
 
-    /**
-     * Returns true if this item has an enchantment glint. By default, this returns <code>stack.isItemEnchanted()</code>,
-     * but other items can override it (for instance, written books always return true).
-     *
-     * Note that if you override this method, you generally want to also call the super version (on {@link Item}) to get
-     * the glint for enchanted items. Of course, that is unnecessary if the overwritten version always returns true.
-     */
     @Override
-    public boolean hasEffect(ItemStack stack) {
-        return is_tracking(stack) || super.hasEffect(stack);
+    public boolean isFoil(ItemStack stack) {
+        return is_tracking(stack) || super.isFoil(stack);
     }
 
+
     public static Optional<RegistryKey<World>> getPlayerDimension(CompoundNBT tag) {
-        return World.field_234917_f_.parse(NBTDynamicOps.INSTANCE, tag.get("PlayerDimension")).result();
+        return World.RESOURCE_KEY_CODEC.parse(NBTDynamicOps.INSTANCE, tag.get("PlayerDimension")).result();
     }
 
     /**
@@ -59,19 +51,20 @@ public class ScentFinder extends Item {
      */
     @Override
     public void inventoryTick(ItemStack stack, World worldIn, Entity entityIn, int itemSlot, boolean isSelected) {
-        if (!worldIn.isRemote) {
+        if (worldIn.isClientSide) {
             if (is_tracking(stack)) {
                 CompoundNBT compoundnbt = stack.getOrCreateTag();
                 if (compoundnbt.contains("PlayerTracked") && !compoundnbt.getBoolean("PlayerTracked")) {
                     return;
                 }
                 Optional<RegistryKey<World>> optional = getPlayerDimension(compoundnbt);
-                if (optional.isPresent() && optional.get() == worldIn.func_234923_W_() && compoundnbt.contains("PlayerName")) {
+                if (optional.isPresent() && optional.get() == worldIn.dimension() && compoundnbt.contains("PlayerName")) {
                     String trackedPlayerName = compoundnbt.getString("PlayerName");
-                    Optional<? extends PlayerEntity> tPlayerOptional = worldIn.getPlayers().stream().filter(p -> p.getName().getUnformattedComponentText().equals(trackedPlayerName)).findFirst();
+                    Optional<? extends PlayerEntity> tPlayerOptional = worldIn.players().stream().filter(p -> p.getName().getString().equals(trackedPlayerName)).findFirst();
                     if (tPlayerOptional.isPresent()) {
                         PlayerEntity trackedPlayer = tPlayerOptional.get();
-                        compoundnbt.put("PlayerPos", writePos((int) trackedPlayer.lastTickPosX, (int) trackedPlayer.lastTickPosY, (int) trackedPlayer.lastTickPosZ));
+                        Vector3d currentPosition = trackedPlayer.position();
+                        compoundnbt.put("PlayerPos", writePos((int) currentPosition.x, (int) currentPosition.y, (int) currentPosition.z));
                     }
                 }
             }
@@ -80,20 +73,20 @@ public class ScentFinder extends Item {
 
 
     @Override
-    public ActionResult<ItemStack> onItemRightClick(World worldIn, PlayerEntity playerIn, Hand handIn) {
-        List<? extends PlayerEntity> players = new ArrayList<>(worldIn.getPlayers());
+    public ActionResult<ItemStack> use(World world, PlayerEntity playerIn, Hand hand) {
+        List<? extends PlayerEntity> players = new ArrayList<>(world.players());
         if (players.size() > 0) {
-            ItemStack heldItem = playerIn.getHeldItem(handIn);
+            ItemStack heldItem = playerIn.getItemInHand(hand);
             CompoundNBT tag = heldItem.getOrCreateTag();
             PlayerEntity curr = null;
-            players.sort(Comparator.comparing(o -> o.getName().getUnformattedComponentText()));
+            players.sort(Comparator.comparing(o -> o.getName().getString()));
             if (tag.getString("PlayerName").isEmpty()) {
                 curr = players.get(0);
             } else {
                 String prevTracked = tag.getString("PlayerName");
                 for (int i = 0; i < players.size(); i++) {
                     PlayerEntity c = players.get(i);
-                    if (c.getName().getUnformattedComponentText().equals(prevTracked)) {
+                    if (c.getName().getString().equals(prevTracked)) {
                         if (i == players.size() - 1) {
                             curr = players.get(0);
                         } else {
@@ -107,19 +100,20 @@ public class ScentFinder extends Item {
                 }
             }
             try {
-                final String trackedPlayerName = curr.getName().getUnformattedComponentText();
-                playerIn.sendStatusMessage(new StringTextComponent(String.format("Tracking %s", trackedPlayerName)), true);
-                this.track(worldIn.func_234923_W_(), curr.lastTickPosX, curr.lastTickPosY, curr.lastTickPosZ, curr.getName().getUnformattedComponentText(), tag);
+                final String trackedPlayerName = curr.getName().getString();
+                playerIn.displayClientMessage(new StringTextComponent(String.format("Tracking %s", trackedPlayerName)), true);
+                this.track(world.dimension(), curr.position().x, curr.position().y, curr.position().z, curr.getName().toString(), tag);
                 heldItem.setTag(tag);
             } catch (Exception e) {
                 LOGGER.error("Compass could not track was trying to track {}!!!", curr);
                 throw e;
             }
-            return ActionResult.func_233538_a_(heldItem, worldIn.isRemote);
+            return ActionResult.success(heldItem);
         } else {
-            return super.onItemRightClick(worldIn, playerIn, handIn);
+            return super.use(world, playerIn, hand);
         }
     }
+
 
     public static CompoundNBT writePos(int x, int y, int z) {
         CompoundNBT compoundnbt = new CompoundNBT();
@@ -131,7 +125,7 @@ public class ScentFinder extends Item {
 
     private void track(RegistryKey<World> registryKey, double x, double y, double z, String playerName,  CompoundNBT cNBT) {
         cNBT.put("PlayerPos", writePos((int) x, (int) y, (int) z));
-        World.field_234917_f_.encodeStart(NBTDynamicOps.INSTANCE, registryKey).resultOrPartial(LOGGER::error).ifPresent((p) -> {
+        World.RESOURCE_KEY_CODEC.encodeStart(NBTDynamicOps.INSTANCE, registryKey).resultOrPartial(LOGGER::error).ifPresent((p) -> {
             cNBT.put("PlayerDimension", p);
         });
         cNBT.putBoolean("PlayerTracked", true);

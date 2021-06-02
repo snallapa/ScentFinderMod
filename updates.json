@@ -1,10 +1,15 @@
 {
   "homepage": "https://github.com/snallapa/ScentFinderMod/releases",
   "promos": {
+    "1.16.5-latest" : "1.7",
+    "1.16.5-recommended": "1.7",
     "1.16.2-recommended": "1.6",
     "1.16.2-latest": "1.6",
     "1.16.1-recommended": "1.5",
     "1.16.1-latest": "1.5"
+  },
+  "1.16.5": {
+    "1.7": "updating for 1.16.5"
   },
   "1.16.2": {
     "1.6" : "updating for 1.16.2"
