@@ -16,5 +16,10 @@
   },
   "1.16.1": {
     "1.5" : "Using update json"
+  },
+  "updater": {
+    "source": "GITHUB",
+    "repo": "ScentFinderMod",
+    "owner": "snallapa"
   }
 }
